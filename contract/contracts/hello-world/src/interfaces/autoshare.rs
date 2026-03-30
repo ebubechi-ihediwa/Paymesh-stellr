@@ -197,6 +197,14 @@ pub trait AutoShareTrait {
     /// Returns all distribution history for a group.
     fn get_group_distributions(env: Env, id: BytesN<32>) -> Vec<DistributionHistory>;
 
+    /// Returns paginated distribution history for a group.
+    fn get_distribution_history_paginated(
+        env: Env,
+        id: BytesN<32>,
+        offset: u32,
+        limit: u32,
+    ) -> (Vec<DistributionRecord>, u32);
+
     /// Returns all distribution history for a member.
     fn get_member_distributions(env: Env, member: Address) -> Vec<DistributionRecord>;
 

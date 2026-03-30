@@ -378,6 +378,16 @@ impl AutoShareContract {
         autoshare_logic::get_group_distributions(env, id)
     }
 
+    /// Returns paginated distribution history for a group.
+    pub fn get_distribution_history_paginated(
+        env: Env,
+        id: BytesN<32>,
+        offset: u32,
+        limit: u32,
+    ) -> (Vec<base::types::DistributionRecord>, u32) {
+        autoshare_logic::get_distribution_history_paginated(env, id, offset, limit)
+    }
+
     /// Returns the total amount distributed by a group across all tokens.
     pub fn get_group_total_distributed(env: Env, id: BytesN<32>) -> i128 {
         autoshare_logic::get_group_total_distributed(env, id)

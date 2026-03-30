@@ -1244,6 +1244,42 @@ pub fn get_group_distributions(env: Env, id: BytesN<32>) -> Vec<DistributionReco
         .unwrap_or(Vec::new(&env))
 }
 
+pub fn get_distribution_history_paginated(
+    env: Env,
+    id: BytesN<32>,
+    offset: u32,
+    limit: u32,
+) -> (Vec<DistributionRecord>, u32) {
+    let group_dist_key = DataKey::GroupDistributions(id);
+    let distributions: Vec<DistributionRecord> = env
+        .storage()
+        .persistent()
+        .get(&group_dist_key)
+        .unwrap_or(Vec::new(&env));
+
+    let total = distributions.len();
+    if total == 0 {
+        return (Vec::new(&env), 0);
+    }
+
+    bump_persistent(&env, &group_dist_key);
+
+    // Cap limit at 20
+    let actual_limit = limit.min(20);
+    let mut paginated = Vec::new(&env);
+
+    if actual_limit > 0 && offset < total {
+        let end = offset.saturating_add(actual_limit).min(total);
+        for i in offset..end {
+            if let Some(record) = distributions.get(i) {
+                paginated.push_back(record);
+            }
+        }
+    }
+
+    (paginated, total)
+}
+
 pub fn get_group_total_distributed(env: Env, id: BytesN<32>) -> i128 {
     let distributions = get_group_distributions(env, id);
     let mut total: i128 = 0;
